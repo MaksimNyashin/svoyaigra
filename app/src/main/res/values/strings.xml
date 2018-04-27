@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Svoya Igra</string>
+    <string name="show_answer">Show Answer</string>
+    <string name="new_game">New</string>
+    <string name="next">-></string>
+    <string name="prev"><![CDATA[<-]]></string>
+    <string name="welcome_letter">Dear Guest,\nwelcome to the Application \"Svoya Igra\" by El_Diablo.
+        It would help you to play the Game with YOUR packages.
+        To start the game press \"New game\" and select your package in file system of your gadget.
+        To move between questions use \"<![CDATA[<-]]>\" and \"->\" buttons.
+        If you want to check your answer, press show answer.\n
+        I hope, you would enjoy playing the game.\n
+        Yours sincerely.\n
+        Maksimus_El_Diablo\n\n
+        P.S. With any questions and bugs mail to megamax143.13@gmail.com with header \"Svoya Igra\".</string>
+</resources>

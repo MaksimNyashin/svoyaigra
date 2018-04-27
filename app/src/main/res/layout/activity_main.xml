@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="nyashin.svoyaigra.MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="8dp"
+        tools:ignore="MissingConstraints">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+            <Button
+                android:id="@+id/newGame"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/new_game" />
+
+            <Spinner
+                android:id="@+id/theme"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="10"
+                android:enabled="false"
+                android:inputType="textPersonName"
+                android:text="Theme" />
+
+            <Button
+                android:id="@+id/prev"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/prev" />
+
+            <Button
+                android:id="@+id/next"
+                style="@style/NotCapsButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/next" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/question"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:enabled="false"
+            android:text="@string/welcome_letter"
+            android:textSize="18sp"
+            android:visibility="visible"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"/>
+
+        <Button
+            android:id="@+id/showAnswer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/show_answer"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/answer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:enabled="false"
+            android:textSize="18sp"
+            android:visibility="invisible"
+            android:layout_marginStart="10dp" />
+
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>
