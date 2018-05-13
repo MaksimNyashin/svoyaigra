@@ -3,6 +3,7 @@ package nyashin.svoyaigra;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -23,6 +24,7 @@ class Theme {
     Theme(String input, Context context)
     {
         this.context = context;
+        System.out.println(input);
         String z[] = input.split("\n");
         if (z.length < 6)
         {
@@ -32,8 +34,13 @@ class Theme {
         name = z[0];
         int q = 1;
         StringBuilder s = new StringBuilder();
+        String author = "Автор";
         while ((z[q].charAt(0) < '0' || z[q].charAt(0) > '9')) {
-            if (q > 1)
+            boolean bbb = true;
+            for (int j = 0; j < 5; j++)
+                if (z[q].charAt(j) != author.charAt(j))
+                    bbb = false;
+            if (!bbb)
                 s.append(z[q]).append(" ");
             q++;
         }
@@ -48,6 +55,8 @@ class Theme {
             else if (z[q].charAt(0) >= '0' && z[q].charAt(0) <= '9')
             {
                 y++;
+                if (y >= 5)
+                    Log.e(MainActivity.TAG, "Theme: " + input);
                 //try {
                     quest[y] = new Question();
                 /*} catch (Exception e)
@@ -56,7 +65,7 @@ class Theme {
                         System.out.println(quest[i].toString());
                     System.out.println(Arrays.toString(z));
                 }*/
-                String otvet = "Ответ";
+                String otvet = "Ответ:+";
                 String z_[] = z[q].split(otvet);
                 quest[y].setTask(z_[0]);
                 if (z_.length > 1)
@@ -66,7 +75,10 @@ class Theme {
             }
             else {
                 if (quest[y].getAnswer().equals(""))
-                    quest[y].setTask(quest[y].getTask() + z[q]);
+                    quest[y].setTask(quest[y].getTask() + '\n' + z[q]);
+                else
+                    quest[y].setAnswer(quest[y].getAnswer() + '\n' + z[q]);
+
             }
         }
         id = -1;
@@ -113,7 +125,7 @@ class Theme {
         if (0 <= id && id < 5)
             quest[id].write();
         if (!extra.equals(""))
-            Toast.makeText(context, extra, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, extra, Toast.LENGTH_LONG).show();
     }
 
     void addSharedPreferences(int themeId, Context context)

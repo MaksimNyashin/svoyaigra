@@ -35,6 +35,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static android.os.SystemClock.sleep;
+
 /**
  * Created by Maxim on 23.04.2018.
  * With help
@@ -47,21 +49,29 @@ import java.util.List;
  */
 
 class OpenFileDialog extends AlertDialog.Builder {
-    private String currentPath = Environment.getExternalStorageDirectory().getAbsolutePath();
-    private List<File> files = new ArrayList<>();
+    private String currentPath;
+    private List<File> files;
     private String TAG = MainActivity.TAG;
     private TextView title;
     private ListView listView;
     private int selectedIndex = -1;
+    private Context context;
 
     OpenFileDialog(final Context context) {
         super(context);
+        currentPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+        this.context = context;
+        files = new ArrayList<>();
+        List<File> gotFiles = getFiles(currentPath);
+        if (gotFiles == null) {
+            return;
+        }
+        files.addAll(gotFiles);
         title = createTitle(context);
         title.setText(currentPath);
         //changeTitle();
         LinearLayout linearLayout = createMainLayout(context);
         linearLayout.addView(createBackItem(context));
-        files.addAll(getFiles(currentPath));
         listView = createListView(context);
         listView.setAdapter(new FileAdapter(context, files));
         linearLayout.addView(listView);
@@ -80,7 +90,6 @@ class OpenFileDialog extends AlertDialog.Builder {
                 //.setAdapter(new FileAdapter(context, getFiles(currentPath)), null);
         //setTitle(currentPath);
     }
-    int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE;
 
     @SuppressLint("InlinedApi")
     private List<File> getFiles(String fileDirectory) {
@@ -88,11 +97,29 @@ class OpenFileDialog extends AlertDialog.Builder {
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             Log.e(TAG, "getFiles: There were no Permission");
-            ActivityCompat.requestPermissions((Activity) getContext(),
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+            int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
+            try {
+                ActivityCompat.requestPermissions((Activity) context,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+            } catch (Exception e)
+            {
+                Log.e(TAG, "getFiles: " + e + " " + Arrays.toString(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}) + "  " + MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+            }
         }
         Log.e(TAG, "getFiles: " + directory + " " + directory.exists() + " " + directory.canRead() + " " + directory.canExecute() + " " + Arrays.toString(directory.list()));
+        /*while (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            sleep(1000);
+        }*/
+        int cnt = 0;
+        while (!directory.canRead())
+        {
+            sleep(500);
+            cnt++;
+            if (cnt == 5)
+                return null;
+        }
         List<File> fileList = Arrays.asList(directory.listFiles());
         Collections.sort(fileList, new Comparator<File>() {
             @Override
@@ -106,6 +133,10 @@ class OpenFileDialog extends AlertDialog.Builder {
             }
         });
         return fileList;
+    }
+
+    boolean isBad() {
+        return (files == null || files.size() == 0);
     }
 
     private class FileAdapter extends ArrayAdapter<File> {
@@ -137,10 +168,11 @@ class OpenFileDialog extends AlertDialog.Builder {
             List<File> fileList = getFiles(currentPath);
             files.clear();
             selectedIndex = -1;
+            assert fileList != null;
             files.addAll(fileList);
             adapter.notifyDataSetChanged();
             title.setText(currentPath);
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             Toast.makeText(getContext(), android.R.string.unknownName, Toast.LENGTH_SHORT);
         }
     }
@@ -206,7 +238,6 @@ class OpenFileDialog extends AlertDialog.Builder {
         linearLayout.setMinimumHeight(getLinearLayoutMinHeight(context));
         return linearLayout;
     }
-
 
     //back and title TextViews
     private int getItemHeight(Context context) {

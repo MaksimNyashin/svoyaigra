@@ -6,9 +6,10 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -18,11 +19,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import static java.lang.Math.abs;
+
 public class MainActivity extends AppCompatActivity {
     private Button newGame;
     @SuppressLint("StaticFieldLeak")
     private static Button showAnswer;
-    private Button prev, next;
+    //private Button prev, next;
     @SuppressLint("StaticFieldLeak")
     private static TextView question;
     @SuppressLint("StaticFieldLeak")
@@ -35,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     static public final String fileString = "file";
     static public String globalFileName = "";
 
+    @SuppressLint("StaticFieldLeak")
     private static Pack pack;
 
     @Override
@@ -56,7 +60,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 OpenFileDialog fileDialog = new OpenFileDialog(MainActivity.this)
                         .setOpenDialogListener(openDialogListener);
-                fileDialog.show();
+                if (!fileDialog.isBad())
+                    fileDialog.show();
             }
         });
 
@@ -72,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        prev = findViewById(R.id.prev);
+        /*prev = findViewById(R.id.prev);
         prev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -94,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
                 pack.nextQuestion(MainActivity.this);
                 showAnswer.setVisibility(View.VISIBLE);
             }
-        });
+        });*/
         SharedPreferences sharedPreferences = MainActivity.this.getSharedPreferences(PREFERENCES_FILE_NAME, Context.MODE_PRIVATE);
         globalFileName = sharedPreferences.getString(fileString, "");
         if (!globalFileName.equals(""))
@@ -155,5 +160,70 @@ public class MainActivity extends AppCompatActivity {
 
     public static TextView getAnswer(){
         return answer;
+    }
+
+
+    /**
+     * next and previous question
+     * by swiping left and right
+     * or pressing in right or left side of screen
+     *
+     * made with help
+     * https://habr.com/post/118482
+     */
+    private float fromPosition, fromY;
+
+    @SuppressLint("ResourceType")
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        float EPS = 20;
+        switch (event.getAction())
+        {
+            case MotionEvent.ACTION_DOWN:
+                fromPosition = event.getX();
+                fromY = event.getY();
+                break;
+            case MotionEvent.ACTION_UP:
+                float toPosition = event.getX();
+                if (fromPosition - toPosition > EPS)
+                    nextQuestion();
+                else
+                    if (fromPosition - toPosition < -EPS)
+                        prevQuestion();
+                    else
+                        if (abs(fromPosition - toPosition) < EPS && abs(fromY - event.getY()) < EPS &&
+                                //fromY + EPS < findViewById(R.id.question).getHeight() + findViewById(R.id.topLayout).getHeight() &&
+                                //fromY + EPS + findViewById(R.id.showAnswer).getHeight() + findViewById(R.id.answer).getHeight() < findViewById(R.id.wholeLayout).getHeight()&&
+                                fromY + EPS < 1024 &&
+                                fromY - EPS > findViewById(R.id.question).getTop())
+                            if (fromPosition + EPS < findViewById(R.id.question).getWidth() / 2)
+                                prevQuestion();
+                            else
+                            if (fromPosition - EPS > findViewById(R.id.question).getWidth() / 2)
+                                    nextQuestion();
+                break;
+            default:
+                break;
+        }
+        return super.onTouchEvent(event);
+    }
+
+    private void nextQuestion() {
+        try {
+            pack.nextQuestion(MainActivity.this);
+        }
+        catch (Exception e)
+        {
+            Log.e(TAG, "nextQuestion: " + e);
+        }
+    }
+    private void prevQuestion() {
+        try {
+            pack.prevQuestion(MainActivity.this);
+        }
+        catch (Exception e)
+        {
+            Log.e(TAG, "nextQuestion: " + e);
+        }
     }
 }

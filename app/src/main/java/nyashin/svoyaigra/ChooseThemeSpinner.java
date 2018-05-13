@@ -1,12 +1,15 @@
 package nyashin.svoyaigra;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
+
+import static nyashin.svoyaigra.MainActivity.TAG;
 
 /**
  * Created by Maxim on 27.04.2018.
@@ -19,7 +22,7 @@ class ChooseThemeSpinner{
     private Spinner spinner;
     private String[] list;
     private ArrayAdapter<?> adapter;
-    Context context;
+    private Context context;
 
     ChooseThemeSpinner(Context context, Spinner newSpinner) {
         this.context = context;
@@ -38,7 +41,16 @@ class ChooseThemeSpinner{
     private AdapterView.OnItemSelectedListener onItemSelectedListener= new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-            MainActivity.getPack().setId(position);
+            if (position < 0)
+                position = 0;
+            if (position >= list.length)
+                position = list.length - 1;
+            try {
+                MainActivity.getPack().setId(position);
+            } catch (Exception e)
+            {
+                Log.e(TAG, "onItemSelected: " + e);
+            }
         }
 
         @Override
@@ -58,7 +70,7 @@ class ChooseThemeSpinner{
         spinner.setSelection(position);
     }
 
-    void adapterSettings() {
+    private void adapterSettings() {
         adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, list);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);

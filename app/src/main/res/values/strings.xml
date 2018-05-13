@@ -7,7 +7,8 @@
     <string name="welcome_letter">Dear Guest,\nwelcome to the Application \"Svoya Igra\" by El_Diablo.
         It would help you to play the Game with YOUR packages.
         To start the game press \"New game\" and select your package in file system of your gadget.
-        To move between questions use \"<![CDATA[<-]]>\" and \"->\" buttons.
+        To move between questions you can press on the left or on the right side of question
+        or you can swipe to right or to left and get the same result.
         If you want to check your answer, press show answer.\n
         I hope, you would enjoy playing the game.\n
         Yours sincerely.\n

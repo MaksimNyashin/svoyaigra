@@ -6,6 +6,7 @@
     tools:context="nyashin.svoyaigra.MainActivity">
 
     <LinearLayout
+        android:id = "@+id/wholeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -14,6 +15,7 @@
         tools:ignore="MissingConstraints">
 
         <LinearLayout
+            android:id="@+id/topLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -35,7 +37,7 @@
                 android:inputType="textPersonName"
                 android:text="Theme" />
 
-            <Button
+            <!--<Button
                 android:id="@+id/prev"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -48,22 +50,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/next" />
+                android:text="@string/next" />-->
 
         </LinearLayout>
 
         <TextView
             android:id="@+id/question"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginStart="10dp"
             android:layout_weight="1"
             android:enabled="false"
             android:text="@string/welcome_letter"
             android:textSize="18sp"
-            android:visibility="visible"
-            android:layout_marginStart="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"/>
+            android:visibility="visible" />
 
         <Button
             android:id="@+id/showAnswer"

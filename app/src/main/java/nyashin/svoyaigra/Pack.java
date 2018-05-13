@@ -2,6 +2,7 @@ package nyashin.svoyaigra;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -14,15 +15,16 @@ import java.util.ArrayList;
  */
 
 class Pack {
-    private static ArrayList<Theme> list = new ArrayList<>();
+    private static ArrayList<Theme> list;
     private int id;
-    Context context;
+    private Context context;
 
     Pack(String input, Context context)
     {
         this.context = context;
+        list = new ArrayList<>();
         SharedPreferences sharedPreferences = context.getSharedPreferences(MainActivity.PREFERENCES_FILE_NAME, Context.MODE_PRIVATE);
-        int y = sharedPreferences.getInt(MainActivity.globalFileName, 0);
+        int y = sharedPreferences.getInt(MainActivity.globalFileName, -1);
         id = y / 5;
 
         String z[] = input.split("\n\n");
@@ -34,10 +36,21 @@ class Pack {
             list.add(theme);
         }
         MainActivity.getThemeSpinner().setList(getAllThemes());
-        Theme.setTheme(id);
         /*for (int i = 0; i  < id; i++)
             list.get(i).setId(5);*/
-        list.get(id).setId(y % 5);
+        if (id >= z.length)
+            MainActivity.setQuestion("Package is finished");
+        else
+            if (id < 0)
+                MainActivity.setQuestion("There is no questions before the first.");
+            else {
+                try {
+                    list.get(id).setId(y % 5);
+                    Theme.setTheme(id);
+                } catch (Exception e) {
+                    Log.e(MainActivity.TAG, "Pack: id=" + id + " y=" + y + " z.length=" + z.length);
+                }
+            }
     }
 
     void nextQuestion(Context context) {

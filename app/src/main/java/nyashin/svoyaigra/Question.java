@@ -23,7 +23,7 @@ public class Question {
     void setTask(String task) {
         this.task = task;
     }
-    public String getTask() {
+    String getTask() {
         return task;
     }
 
