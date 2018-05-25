@@ -32,10 +32,20 @@ class Theme {
             return;
         }
         name = z[0];
+        for (int i = 0; i < 4; i++)
+        {
+            if (name.charAt(i) != "Темы:".charAt(i))
+                break;
+            if (i == 3) {
+                id = -143;
+                return;
+            }
+
+        }
         int q = 1;
         StringBuilder s = new StringBuilder();
         String author = "Автор";
-        while ((z[q].charAt(0) < '0' || z[q].charAt(0) > '9')) {
+        while (q < z.length && !isNumber(z[q])) {
             boolean bbb = true;
             for (int j = 0; j < 5; j++)
                 if (z[q].charAt(j) != author.charAt(j))
@@ -43,6 +53,11 @@ class Theme {
             if (!bbb)
                 s.append(z[q]).append(" ");
             q++;
+        }
+        if (q == z.length)
+        {
+            id = -14313;
+            return;
         }
         setExtra(s.toString());
         int y = -1;
@@ -52,11 +67,11 @@ class Theme {
             {
                 quest[y].setAnswer(z[q]);
             }
-            else if (z[q].charAt(0) >= '0' && z[q].charAt(0) <= '9')
+            else if (isNumber(z[q]))
             {
                 y++;
                 if (y >= 5)
-                    Log.e(MainActivity.TAG, "Theme: " + input);
+                    Log.e(MainActivity.TAG, "Theme: " + input + " " + z[q]);
                 //try {
                     quest[y] = new Question();
                 /*} catch (Exception e)
@@ -65,7 +80,7 @@ class Theme {
                         System.out.println(quest[i].toString());
                     System.out.println(Arrays.toString(z));
                 }*/
-                String otvet = "Ответ:+";
+                String otvet = "Ответ:";
                 String z_[] = z[q].split(otvet);
                 quest[y].setTask(z_[0]);
                 if (z_.length > 1)
@@ -88,8 +103,7 @@ class Theme {
         return quest[id];
     }*/
 
-    Question prevQuestion(int themeId, Context context)
-    {
+    Question prevQuestion(int themeId, Context context) {
         id--;
         addSharedPreferences(themeId, context);
         if (id >= 0)
@@ -100,7 +114,7 @@ class Theme {
     Question nextQuestion(int themeId, Context context) {
         id++;
         addSharedPreferences(themeId, context);
-        if (id < 5)
+        if (id < getSize())
             return quest[id];
         return null;
     }
@@ -140,5 +154,17 @@ class Theme {
 
     private void setExtra(String newExtra){
         extra = newExtra;
+    }
+
+    public int getSize() {
+        return quest.length;
+    }
+
+    private boolean isNumber(String s) {
+        return isDigit(s.charAt(0)) && isDigit(s.charAt(1)) && ((isDigit(s.charAt(2)) && s.charAt(3) == '.') || s.charAt(2) == '.');
+    }
+
+    private boolean isDigit(char c) {
+        return c >= '0' && c <= '9';
     }
 }

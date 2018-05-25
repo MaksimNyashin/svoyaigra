@@ -104,7 +104,7 @@ class Pack {
                 if (id >= list.size())
                     MainActivity.setQuestion("Package is finished");
                 else {
-                    list.get(id).setId(5);
+                    list.get(id).setId(list.get(id).getSize());
                     goBack(context);
                 }
             }
@@ -120,7 +120,7 @@ class Pack {
                 MainActivity.setQuestion("There is no questions before the first.");
                 return;
             }
-            list.get(id).setId(5);
+            list.get(id).setId(list.get(id).getSize());
             goBack(context);
         }
     }

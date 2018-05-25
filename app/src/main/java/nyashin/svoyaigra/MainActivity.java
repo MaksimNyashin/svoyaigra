@@ -3,10 +3,14 @@ package nyashin.svoyaigra;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -16,8 +20,10 @@ import android.widget.TextView;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Date;
 
 import static java.lang.Math.abs;
 
@@ -104,6 +110,26 @@ public class MainActivity extends AppCompatActivity {
         globalFileName = sharedPreferences.getString(fileString, "");
         if (!globalFileName.equals(""))
             setPack();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        // TODO: 25.05.2018 add button that openes images in browser or copies link 
+        getMenuInflater().inflate(R.menu.values, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                takeScreenshot();
+            }
+        }).start();
+        return true;
     }
 
     public static void setQuestion(String question) {
@@ -226,4 +252,67 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, "nextQuestion: " + e);
         }
     }
+
+    /**
+     * taking a screenshot
+     *
+     * made with help
+     * https://stackoverflow.com/questions/2661536/how-to-programmatically-take-a-screenshot
+     */
+    private void takeScreenshot() {
+        Date now = new Date();
+        final String nowDate = (String)(android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now));
+        try {
+            File folder = new File(Environment.getExternalStorageDirectory() + "/Pictures/SvoyaIgra");
+            if (!folder.exists()) {
+                if (folder.mkdir())
+                    Log.d(TAG, "takeScreenshot: Package successfully created");
+                else
+                    Log.e(TAG, "takeScreenshot: Failed to create package");
+            }
+            final String mPath = folder.getPath() + "/" + nowDate + ".png";
+            View view1= getWindow().getDecorView().getRootView();
+            view1.setDrawingCacheEnabled(true);
+            Bitmap bitmap = Bitmap.createBitmap(view1.getDrawingCache());
+            view1.setDrawingCacheEnabled(false);
+
+            File imageFile = new File(mPath);
+
+            FileOutputStream outputStream = new FileOutputStream(imageFile);
+            int quality = 100;
+            bitmap.compress(Bitmap.CompressFormat.PNG, quality, outputStream);
+            outputStream.flush();
+            outputStream.close();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    notification(nowDate, mPath);
+                }
+            }).start();
+        } catch (Exception e)
+        {
+            Log.e(TAG, "takeScreenshot: " + e);
+        }
+    }
+
+    private void notification(String date, String path) {
+        // TODO: 24.05.2018 add notifications about screenshots with redirecting into gallery + why it doesn't show saved images
+        /*Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this,
+                0, notificationIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+
+        Resources res = this.getResources();
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder.setContentIntent(contentIntent)
+                .setSmallIcon(android.R.drawable.ic_menu_camera)
+                .setContentTitle("Screenshot was made")
+                .setContentText(date)
+                .setWhen(System.currentTimeMillis())
+                .setAutoCancel(true);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(13, builder.build());*/
+    }
 }
+
